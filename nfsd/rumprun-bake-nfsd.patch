@@ -1,0 +1,13 @@
+diff --git a/app-tools/rumprun-bake.conf b/app-tools/rumprun-bake.conf
+index b54e16e..73d9e83 100644
+--- a/app-tools/rumprun-bake.conf
++++ b/app-tools/rumprun-bake.conf
+@@ -66,6 +66,8 @@ conf _stdfs
+ 	add	-lrumpfs_ffs			\
+ 		-lrumpfs_cd9660			\
+ 		-lrumpfs_ext2fs			\
++		-lrumpfs_nfs			\
++		-lrumpfs_nfsserver		\
+ 		-lrumpdev_disk			\
+ 		-lrumpvfs
+ fnoc

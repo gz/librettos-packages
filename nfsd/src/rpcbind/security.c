@@ -19,12 +19,21 @@
 /*
  * XXX for special case checks in check_callit.
  */
+#ifndef RUMPRUN
 #include <rpcsvc/mount.h>
 #include <rpcsvc/rquota.h>
 #include <rpcsvc/nfs_prot.h>
 #include <rpcsvc/yp.h>
 #include <rpcsvc/ypclnt.h>
 #include <rpcsvc/yppasswd.h>
+#else
+#include "../mount.h"
+#include <rpcsvc/yp_prot.h>
+#define NFS_PROGRAM 100003
+#define MOUNTPROG 100005
+#define YPPASSWDPROG 100009
+#define RQUOTAPROG 100011
+#endif
 
 #include "rpcbind.h"
 

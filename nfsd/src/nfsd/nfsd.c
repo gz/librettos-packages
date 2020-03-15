@@ -94,12 +94,15 @@ __RCSID("$NetBSD: nfsd.c,v 1.68 2016/08/23 13:10:12 christos Exp $");
 #define listen(a, b) rump_sys_listen((a), (b))
 #define accept(a, b, c) rump_sys_accept((a), (b), (c))
 #endif
+#endif
+
+#if defined(NFSD_RUMP) || defined(RUMPRUN)
 #define main nfsd_main
 int nfsd_main(int, char *[]);
 #endif
 
 /* Global defs */
-#if defined(DEBUG) || defined(NFSD_RUMP)
+#if defined(DEBUG) || defined(NFSD_RUMP) || defined(RUMPRUN)
 static int	debug = 1;
 #else
 static int	debug = 0;

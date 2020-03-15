@@ -72,6 +72,11 @@
 
 #define RPC_BUF_MAX	65536	/* can be raised if required */
 
+#ifdef RUMPRUN
+/* Not in xdr.h header. */
+#define xdr_u_int32(x,y) xdr_u_int32_t(x,y)
+#endif
+
 static char emptystring[] = "";
 static int rpcb_rmtcalls;
 

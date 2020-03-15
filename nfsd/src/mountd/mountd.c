@@ -58,7 +58,14 @@ __RCSID("$NetBSD: mountd.c,v 1.129 2015/12/23 16:19:49 christos Exp $");
 #include <rpc/rpc.h>
 #include <rpc/pmap_clnt.h>
 #include <rpc/pmap_prot.h>
+
+#ifdef RUMPRUN
+#include <pthread.h>
+#include "../mount.h"
+#else
 #include <rpcsvc/mount.h>
+#endif
+
 #include <nfs/rpcv2.h>
 #include <nfs/nfsproto.h>
 #include <nfs/nfs.h>
@@ -101,11 +108,50 @@ __RCSID("$NetBSD: mountd.c,v 1.129 2015/12/23 16:19:49 christos Exp $");
 #ifdef MOUNTD_RUMP
 #include "svc_fdset.h"
 #define DEBUGGING 1
+#elif defined(RUMPRUN)
+#define DEBUGGING 1
 #else
 #define DEBUGGING 0
 #endif
 
 #include "mountd.h"
+
+#ifdef RUMPRUN
+#define main mountd_main
+
+void * emalloc(size_t size)
+{
+	void * ptr = malloc(size);
+	if (!ptr) {
+		fprintf(stderr, "emalloc(): out of memory\n");
+		exit(1);
+	}
+	return ptr;
+}
+
+char * estrdup(const char * s)
+{
+	char * ptr = strdup(s);
+	if (!ptr) {
+		fprintf(stderr, "estrdup(): out of memory\n");
+		exit(1);
+	}
+	return ptr;
+}
+
+extern int nfsd_main(int argc, char **argv);
+
+static void * nfsd_thread(void * ptr)
+{
+	char * argv[2];
+	argv[0] = "nfsd";
+	argv[1] = NULL;
+	sleep(1);
+	printf("Starting nfsd...\n");
+	nfsd_main(1, argv);
+	return NULL;
+}
+#endif
 
 /*
  * Structures for keeping the mount list and export list
@@ -347,6 +393,9 @@ main(int argc, char **argv)
 	int xcreated = 0;
 	int one = 1;
 	int maxrec = RPC_MAXDATASIZE;
+#ifdef RUMPRUN
+	pthread_t nfsd_tid;
+#endif
 	in_port_t forcedport = 0;
 #ifdef IPSEC
 	char *policy = NULL;
@@ -552,10 +601,20 @@ main(int argc, char **argv)
 		(void)signal(SIGINT, SIG_IGN);
 		(void)signal(SIGQUIT, SIG_IGN);
 	}
+#ifndef RUMPRUN
 	pidfile(NULL);
+#endif
 #ifdef MOUNTD_RUMP
 	sem_post(&gensem);
 #endif
+
+#ifdef RUMPRUN
+	if (pthread_create(&nfsd_tid, NULL, nfsd_thread, NULL)) {
+		fprintf(stderr, "Cannot create nfsd thread\n");
+		return 1;
+	}
+#endif
+
 	svc_run();
 	syslog(LOG_ERR, "Mountd died");
 	exit(1);

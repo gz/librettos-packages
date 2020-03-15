@@ -72,6 +72,11 @@ static	char sccsid[] = "@(#)rpcbind.c 1.35 89/04/21 Copyr 1984 Sun Micro";
 #include <errno.h>
 #include "rpcbind.h"
 
+#ifdef RUMPRUN
+#include <pthread.h>
+#include <sys/mount.h>
+#endif
+
 #ifdef RPCBIND_RUMP
 #include <semaphore.h>
 
@@ -81,6 +86,8 @@ static	char sccsid[] = "@(#)rpcbind.c 1.35 89/04/21 Copyr 1984 Sun Micro";
 #include "svc_fdset.h"
 
 extern sem_t gensem;
+#define DEBUGGING 1
+#elif defined(RUMPRUN)
 #define DEBUGGING 1
 #else
 #define DEBUGGING 0
@@ -120,6 +127,21 @@ static int init_transport(struct netconfig *);
 static void rbllist_add(rpcprog_t, rpcvers_t, struct netconfig *,
     struct netbuf *);
 __dead static void terminate(int);
+
+#ifdef RUMPRUN
+extern int mountd_main(int argc, char **argv);
+
+static void * mountd_thread(void * ptr)
+{
+	char * argv[2];
+	argv[0] = "mountd";
+	argv[1] = NULL;
+	printf("Starting mountd...\n");
+	mountd_main(1, argv);
+	return NULL;
+}
+#endif
+
 #ifndef RPCBIND_RUMP
 static void parseargs(int, char *[]);
 
@@ -135,6 +157,18 @@ rpcbind_main(void *arg)
 	void *nc_handle;	/* Net config handle */
 	struct rlimit rl;
 	int maxrec = RPC_MAXDATASIZE;
+#ifdef RUMPRUN
+	pthread_t mountd_tid;
+	const char * device = "/dev/ld0a";
+
+	printf("Mounting /disk...\n");
+	if (mount(MOUNT_EXT2FS, "/disk", 0, &device, sizeof(device)) != 0) {
+		fprintf(stderr, "Failed to mount %s!\n", device);
+                return 1;
+	}
+
+	printf("Starting rpcbind...\n");
+#endif
 
 #ifdef RPCBIND_RUMP
 	svc_fdset_init(SVC_FDSET_MT);
@@ -205,7 +239,9 @@ rpcbind_main(void *arg)
 	}
 
 	openlog("rpcbind", 0, LOG_DAEMON);
+#ifndef RUMPRUN
 	pidfile(NULL);
+#endif
 
 	if (runasdaemon) {
 		struct passwd *p;
@@ -225,6 +261,14 @@ rpcbind_main(void *arg)
 #ifdef RPCBIND_RUMP
 	sem_post(&gensem);
 #endif
+
+#ifdef RUMPRUN
+	if (pthread_create(&mountd_tid, NULL, mountd_thread, NULL)) {
+		fprintf(stderr, "Cannot create mountd thread\n");
+		return 1;
+	}
+#endif
+
 	my_svc_run();
 	syslog(LOG_ERR, "svc_run returned unexpectedly");
 	rpcbind_abort();

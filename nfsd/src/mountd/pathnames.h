@@ -34,4 +34,9 @@
 #include <paths.h>
 
 #define	_PATH_EXPORTS		"/etc/exports"
+
+#ifdef RUMPRUN
+#define	_PATH_RMOUNTLIST	"/disk/var/db/mountdtab"
+#else
 #define	_PATH_RMOUNTLIST	"/var/db/mountdtab"
+#endif
