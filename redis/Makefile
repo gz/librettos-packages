@@ -1,5 +1,5 @@
 include ../Makefile.inc
-UPSTREAM=http://download.redis.io/releases/redis-3.0.6.tar.gz
+UPSTREAM=http://download.redis.io/releases/redis-4.0.9.tar.gz
 TARBALL=$(notdir $(UPSTREAM))
 PERSISTENCE_SIZE=2048
 CC=$(RUMPRUN_CC)
@@ -20,6 +20,7 @@ build/redis-server: build/Makefile
 build/Makefile: dl/${TARBALL}
 	mkdir -p build
 	(cd build && tar -xz --strip-components 1 -f ../dl/${TARBALL})
+	../scripts/apply-patches.sh build/ patches/server.patch
 
 dl/$(TARBALL):
 	mkdir -p dl

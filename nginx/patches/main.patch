@@ -1,0 +1,20 @@
+--- a/src/core/nginx.c	2015-04-21 10:11:59.000000000 -0400
++++ a/src/core/nginx.c	2020-03-14 00:01:25.324061681 -0400
+@@ -197,6 +197,8 @@
+ 
+ static char **ngx_os_environ;
+ 
++static int my_argc = 1;
++static char *const my_argv[2] = { "nginx", NULL };
+ 
+ int ngx_cdecl
+ main(int argc, char *const *argv)
+@@ -212,7 +214,7 @@
+         return 1;
+     }
+ 
+-    if (ngx_get_options(argc, argv) != NGX_OK) {
++    if (ngx_get_options(my_argc, my_argv) != NGX_OK) {
+         return 1;
+     }
+ 

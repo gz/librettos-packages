@@ -3,11 +3,7 @@ include ../Makefile.inc
 UPSTREAM=http://nginx.org/download/nginx-1.8.0.tar.gz
 TARBALL=$(notdir $(UPSTREAM))
 
-all: libssl $(RUMPRUN_PKGS_DIR)/lib/libpcre.a bin/nginx images
-
-.NOTPARALLEL: $(RUMPRUN_PKGS_DIR)/lib/libpcre.a
-$(RUMPRUN_PKGS_DIR)/lib/libpcre.a:
-	$(MAKE) -C ../pcre
+all: libssl bin/nginx images
 
 bin/nginx: build/objs/nginx
 	mkdir -p bin
@@ -45,9 +41,9 @@ NGINX_CONF_OPTS += \
 	--http-fastcgi-temp-path=/tmp/fastcgi \
 	--http-scgi-temp-path=/tmp/scgi \
 	--http-uwsgi-temp-path=/tmp/uwsgi \
-	--with-http_ssl_module \
 	--with-ipv6 \
-	--with-pcre
+	--without-http_rewrite_module \
+	--with-threads
 
 build/Makefile: build/stamp_patch
 	(cd build; $(NGINX_CONF_ENV) ./configure $(NGINX_CONF_OPTS))

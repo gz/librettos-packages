@@ -1,0 +1,43 @@
+--- a/memcached.c	2020-03-13 12:46:37.403475428 -0400
++++ b/memcached.c	2020-03-13 12:45:25.227103722 -0400
+@@ -5628,9 +5628,7 @@
+     bool do_daemonize = false;
+     bool preallocate = false;
+     int maxcore = 0;
+-    char *username = NULL;
+     char *pid_file = NULL;
+-    struct passwd *pw;
+     struct rlimit rlim;
+     char *buf;
+     char unit = '\0';
+@@ -5833,7 +5831,6 @@
+             }
+             break;
+         case 'u':
+-            username = optarg;
+             break;
+         case 'P':
+             pid_file = optarg;
+@@ -6252,22 +6249,6 @@
+             exit(EX_OSERR);
+         }
+     }
+-
+-    /* lose root privileges if we have them */
+-    if (getuid() == 0 || geteuid() == 0) {
+-        if (username == 0 || *username == '\0') {
+-            fprintf(stderr, "can't run as root without the -u switch\n");
+-            exit(EX_USAGE);
+-        }
+-        if ((pw = getpwnam(username)) == 0) {
+-            fprintf(stderr, "can't find the user %s to switch to\n", username);
+-            exit(EX_NOUSER);
+-        }
+-        if (setgid(pw->pw_gid) < 0 || setuid(pw->pw_uid) < 0) {
+-            fprintf(stderr, "failed to assume identity of user %s\n", username);
+-            exit(EX_OSERR);
+-        }
+-    }
+ 
+     /* Initialize Sasl if -S was specified */
+     if (settings.sasl) {
