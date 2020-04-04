@@ -119,26 +119,6 @@ __RCSID("$NetBSD: mountd.c,v 1.129 2015/12/23 16:19:49 christos Exp $");
 #ifdef RUMPRUN
 #define main mountd_main
 
-void * emalloc(size_t size)
-{
-	void * ptr = malloc(size);
-	if (!ptr) {
-		fprintf(stderr, "emalloc(): out of memory\n");
-		exit(1);
-	}
-	return ptr;
-}
-
-char * estrdup(const char * s)
-{
-	char * ptr = strdup(s);
-	if (!ptr) {
-		fprintf(stderr, "estrdup(): out of memory\n");
-		exit(1);
-	}
-	return ptr;
-}
-
 extern int nfsd_main(int argc, char **argv);
 
 static void * nfsd_thread(void * ptr)

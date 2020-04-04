@@ -10,6 +10,7 @@
 #include <rpc/pmap_prot.h>
 #include <err.h>
 #include <stdlib.h>
+#include <stdio.h>
 #include <string.h>
 #include <unistd.h>
 #include <util.h>
@@ -284,8 +285,12 @@ check_callit(SVCXPRT *xprt, struct r_rmtcall_args *args, int versnum)
 
 	return 1;
 deny:
+#ifdef LIBWRAP
 	logit(deny_severity, sa, args->rmt_proc, args->rmt_prog,
 	    ": indirect call not allowed");
-
+#else
+	logit(0, sa, args->rmt_proc, args->rmt_prog,
+	    ": indirect call not allowed");
+#endif
 	return 0;
 }
