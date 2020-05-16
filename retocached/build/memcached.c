@@ -6515,7 +6515,7 @@ static bool sanitycheck(void) {
     if (ever != NULL) {
         if (strncmp(ever, "1.", 2) == 0) {
             /* Require at least 1.3 (that's still a couple of years old) */
-            if (('0' <= (unsigned char)ever[2] && (unsigned char)ever[2] < '3') && !isdigit((unsigned char)ever[3])) {
+            if (('0' <= ever[2] && ever[2] < '3') && !isdigit(ever[3])) {
                 fprintf(stderr, "You are using libevent %s.\nPlease upgrade to"
                         " a more recent version (1.3 or newer)\n",
                         event_get_version());
@@ -6582,13 +6582,16 @@ static inline void *allocate(size_t size)
 }
 #endif
 
+int main (int argc, char **argv);
 int main (int argc, char **argv) {
     int c;
     bool lock_memory = false;
     bool do_daemonize = false;
     //bool preallocate = false;
     int maxcore = 0;
+    char *username = NULL;
     char *pid_file = NULL;
+    struct passwd *pw;
     struct rlimit rlim;
     char *buf;
     char unit = '\0';
@@ -6926,6 +6929,7 @@ int main (int argc, char **argv) {
             }
             break;
         case 'u':
+            username = optarg;
             break;
         case 'P':
             pid_file = optarg;
@@ -7609,6 +7613,26 @@ int main (int argc, char **argv) {
         }
     }
 
+    /* lose root privileges if we have them */
+    if (getuid() == 0 || geteuid() == 0) {
+        if (username == 0 || *username == '\0') {
+            fprintf(stderr, "can't run as root without the -u switch\n");
+            exit(EX_USAGE);
+        }
+        if ((pw = getpwnam(username)) == 0) {
+            fprintf(stderr, "can't find the user %s to switch to\n", username);
+            exit(EX_NOUSER);
+        }
+        if (setgroups(0, NULL) < 0) {
+            fprintf(stderr, "failed to drop supplementary groups\n");
+            exit(EX_OSERR);
+        }
+        if (setgid(pw->pw_gid) < 0 || setuid(pw->pw_uid) < 0) {
+            fprintf(stderr, "failed to assume identity of user %s\n", username);
+            exit(EX_OSERR);
+        }
+    }
+
     /* Initialize Sasl if -S was specified */
     if (settings.sasl) {
         init_sasl();
@@ -7857,10 +7881,10 @@ int main (int argc, char **argv) {
     /* pin threads */
     int thread_id = omp_get_thread_num();
 
-    /*cpu_set_t my_set;
+    cpu_set_t my_set;
     CPU_ZERO(&my_set);
     CPU_SET(thread_id, &my_set);
-    sched_setaffinity(0, sizeof(cpu_set_t), &my_set);*/
+    sched_setaffinity(0, sizeof(cpu_set_t), &my_set);
 
     conn *myconn = conns[thread_id];
 //    printf("thread:%i of %i on core %i using conn=%p\n", thread_id,

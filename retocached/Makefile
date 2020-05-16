@@ -11,7 +11,7 @@ $(RUMPRUN_PKGS_DIR)/lib/libevent.a:
 
 MEMCACHED_CONF_ENV += \
 	LIBS="-lc -lgomp"\
-	CC=$(RUMPRUN_CC)
+	CC='$(RUMPRUN_CC)'
 
 MEMCACHED_CONF_OPTS += \
 	--prefix=$(shell pwd)/build/dist \
@@ -24,7 +24,6 @@ build/Makefile:
 
 build/configure:
 	cp -rf src build
-	(cd build && tar -xz --strip-components 1 -f ../dl/$(TARBALL))
 
 .PHONY: clean
 clean:
