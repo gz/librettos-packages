@@ -10,7 +10,7 @@ $(RUMPRUN_PKGS_DIR)/lib/libevent.a:
 	$(MAKE) -C ../libevent
 
 $(RUMPRUN_PKGS_DIR)/lib/libgomp.a:
-	$(MAKE) -C ../libgomp
+	$(MAKE) -C ../openmp
 
 
 MEMCACHED_CONF_ENV += \
