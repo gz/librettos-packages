@@ -18,6 +18,9 @@ elif [ $(( $gcc_ver_check )) -eq 4 ] ; then
 elif [ $(( $gcc_ver_check )) -eq 7 ] ; then
 	gcc_branch="releases/gcc-7";
 	echo $gcc_branch;
+elif [ $(( $gcc_ver_check )) -eq 8 ] ; then
+	gcc_branch="releases/gcc-8";
+	echo $gcc_branch;
 else
 	echo "Error: Installed GCC version is not supported by the script!";
 	exit 1;
