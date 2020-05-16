@@ -75,7 +75,7 @@ pkgdatadir = $(datadir)/memcached
 pkgincludedir = $(includedir)/memcached
 pkglibdir = $(libdir)/memcached
 pkglibexecdir = $(libexecdir)/memcached
-am__cd = CDPATH="$${ZSH_VERSION+.}$(PATH_SEPARATOR)"
+am__cd = CDPATH="$${ZSH_VERSION+.}$(PATH_SEPARATOR)" && cd
 install_sh_DATA = $(install_sh) -c -m 644
 install_sh_PROGRAM = $(install_sh) -c
 install_sh_SCRIPT = $(install_sh) -c
@@ -88,23 +88,23 @@ NORMAL_UNINSTALL = :
 PRE_UNINSTALL = :
 POST_UNINSTALL = :
 build_triplet = x86_64-pc-linux-gnu
-host_triplet = x86_64-pc-linux-gnu
+host_triplet = x86_64-rumprun-netbsd
 bin_PROGRAMS = memcached$(EXEEXT)
 noinst_PROGRAMS = memcached-debug$(EXEEXT) sizes$(EXEEXT) \
 	testapp$(EXEEXT) timedrun$(EXEEXT)
 am__append_1 = cache.c
 am__append_2 = cache.c
 #am__append_3 = solaris_priv.c
-#am__append_4 = linux_priv.c
-#am__append_5 = openbsd_priv.c
+@BUILD_LINUX_PRIVS_TRUE@am__append_4 = linux_priv.c
+@BUILD_OPENBSD_PRIVS_TRUE@am__append_5 = openbsd_priv.c
 #am__append_6 = sasl_defs.c
-#am__append_7 = extstore.c extstore.h \
-#                     crc32c.c crc32c.h \
-#                     storage.c storage.h \
-#                     slab_automove_extstore.c slab_automove_extstore.h
+@ENABLE_EXTSTORE_TRUE@am__append_7 = extstore.c extstore.h \
+@ENABLE_EXTSTORE_TRUE@                     crc32c.c crc32c.h \
+@ENABLE_EXTSTORE_TRUE@                     storage.c storage.h \
+@ENABLE_EXTSTORE_TRUE@                     slab_automove_extstore.c slab_automove_extstore.h
 
-#am__append_8 = -lseccomp
-#am__append_9 = -lseccomp
+@BUILD_LINUX_PRIVS_TRUE@am__append_8 = -lseccomp
+@BUILD_LINUX_PRIVS_TRUE@am__append_9 = -lseccomp
 #am__append_10 = memcached_dtrace.h
 #am__append_11 = memcached_dtrace.h
 #am__append_12 = memcached_dtrace.o
@@ -141,15 +141,15 @@ am__memcached_SOURCES_DIST = memcached.c memcached.h hash.c hash.h \
 am__objects_1 = memcached-cache.$(OBJEXT)
 #am__objects_2 =  \
 #	memcached-solaris_priv.$(OBJEXT)
-#am__objects_3 =  \
-#	memcached-linux_priv.$(OBJEXT)
-#am__objects_4 =  \
-#	memcached-openbsd_priv.$(OBJEXT)
+@BUILD_LINUX_PRIVS_TRUE@am__objects_3 =  \
+@BUILD_LINUX_PRIVS_TRUE@	memcached-linux_priv.$(OBJEXT)
+@BUILD_OPENBSD_PRIVS_TRUE@am__objects_4 =  \
+@BUILD_OPENBSD_PRIVS_TRUE@	memcached-openbsd_priv.$(OBJEXT)
 #am__objects_5 = memcached-sasl_defs.$(OBJEXT)
-#am__objects_6 = memcached-extstore.$(OBJEXT) \
-#	memcached-crc32c.$(OBJEXT) \
-#	memcached-storage.$(OBJEXT) \
-#	memcached-slab_automove_extstore.$(OBJEXT)
+@ENABLE_EXTSTORE_TRUE@am__objects_6 = memcached-extstore.$(OBJEXT) \
+@ENABLE_EXTSTORE_TRUE@	memcached-crc32c.$(OBJEXT) \
+@ENABLE_EXTSTORE_TRUE@	memcached-storage.$(OBJEXT) \
+@ENABLE_EXTSTORE_TRUE@	memcached-slab_automove_extstore.$(OBJEXT)
 am_memcached_OBJECTS = memcached-memcached.$(OBJEXT) \
 	memcached-hash.$(OBJEXT) memcached-jenkins_hash.$(OBJEXT) \
 	memcached-murmur3_hash.$(OBJEXT) memcached-slabs.$(OBJEXT) \
@@ -175,16 +175,16 @@ am__memcached_debug_SOURCES_DIST = memcached.c memcached.h hash.c \
 	slab_automove_extstore.h
 am__objects_7 = memcached_debug-cache.$(OBJEXT)
 #am__objects_8 = memcached_debug-solaris_priv.$(OBJEXT)
-#am__objects_9 =  \
-#	memcached_debug-linux_priv.$(OBJEXT)
-#am__objects_10 = memcached_debug-openbsd_priv.$(OBJEXT)
+@BUILD_LINUX_PRIVS_TRUE@am__objects_9 =  \
+@BUILD_LINUX_PRIVS_TRUE@	memcached_debug-linux_priv.$(OBJEXT)
+@BUILD_OPENBSD_PRIVS_TRUE@am__objects_10 = memcached_debug-openbsd_priv.$(OBJEXT)
 #am__objects_11 =  \
 #	memcached_debug-sasl_defs.$(OBJEXT)
-#am__objects_12 =  \
-#	memcached_debug-extstore.$(OBJEXT) \
-#	memcached_debug-crc32c.$(OBJEXT) \
-#	memcached_debug-storage.$(OBJEXT) \
-#	memcached_debug-slab_automove_extstore.$(OBJEXT)
+@ENABLE_EXTSTORE_TRUE@am__objects_12 =  \
+@ENABLE_EXTSTORE_TRUE@	memcached_debug-extstore.$(OBJEXT) \
+@ENABLE_EXTSTORE_TRUE@	memcached_debug-crc32c.$(OBJEXT) \
+@ENABLE_EXTSTORE_TRUE@	memcached_debug-storage.$(OBJEXT) \
+@ENABLE_EXTSTORE_TRUE@	memcached_debug-slab_automove_extstore.$(OBJEXT)
 am__objects_13 = memcached_debug-memcached.$(OBJEXT) \
 	memcached_debug-hash.$(OBJEXT) \
 	memcached_debug-jenkins_hash.$(OBJEXT) \
@@ -371,14 +371,18 @@ distuninstallcheck_listfiles = find . -type f -print
 am__distuninstallcheck_listfiles = $(distuninstallcheck_listfiles) \
   | sed 's|^\./|$(prefix)/|' | grep -v '$(infodir)/dir$$'
 distcleancheck_listfiles = find . -type f -print
+ACLOCAL = ${SHELL} /home/gz/workspace/bespin/target/x86_64-bespin-none/release/build/rkapps-05fc8114dc22c83e/out/retocached/build/missing aclocal-1.15
 AMTAR = $${TAR-tar}
 AM_DEFAULT_VERBOSITY = 1
-AWK = gawk
-CC = gcc
+AUTOCONF = ${SHELL} /home/gz/workspace/bespin/target/x86_64-bespin-none/release/build/rkapps-05fc8114dc22c83e/out/retocached/build/missing autoconf
+AUTOHEADER = ${SHELL} /home/gz/workspace/bespin/target/x86_64-bespin-none/release/build/rkapps-05fc8114dc22c83e/out/retocached/build/missing autoheader
+AUTOMAKE = ${SHELL} /home/gz/workspace/bespin/target/x86_64-bespin-none/release/build/rkapps-05fc8114dc22c83e/out/retocached/build/missing automake-1.15
+AWK = mawk
+CC = x86_64-rumprun-netbsd-gcc
 CCDEPMODE = depmode=gcc3
-CFLAGS = -g -O2 -pthread -fopenmp -pthread -Wall -Werror -pedantic -Wmissing-prototypes -Wmissing-declarations -Wredundant-decls
-CPP = gcc -E
-CPPFLAGS = 
+CFLAGS = -g -O2 -pthread -pthread -Wall -Werror -pedantic -Wmissing-prototypes -Wmissing-declarations -Wredundant-decls
+CPP = x86_64-rumprun-netbsd-gcc -E
+CPPFLAGS =  -I/home/gz/workspace/bespin/target/x86_64-bespin-none/release/build/rkapps-05fc8114dc22c83e/out/pkgs/include
 CYGPATH_W = echo
 DEFS = -DHAVE_CONFIG_H
 DEPDIR = .deps
@@ -396,30 +400,35 @@ INSTALL_DATA = ${INSTALL} -m 644
 INSTALL_PROGRAM = ${INSTALL}
 INSTALL_SCRIPT = ${INSTALL}
 INSTALL_STRIP_PROGRAM = $(install_sh) -c -s
-LDFLAGS = 
+LDFLAGS =  -L/home/gz/workspace/bespin/target/x86_64-bespin-none/release/build/rkapps-05fc8114dc22c83e/out/pkgs/lib
 LIBOBJS = 
-LIBS = -levent 
+LIBS = -levent -lc -lgomp
 LTLIBOBJS = 
+MAKEINFO = ${SHELL} /home/gz/workspace/bespin/target/x86_64-bespin-none/release/build/rkapps-05fc8114dc22c83e/out/retocached/build/missing makeinfo
 MKDIR_P = /bin/mkdir -p
 OBJEXT = o
 PACKAGE = memcached
 PACKAGE_BUGREPORT = memcached@googlegroups.com
 PACKAGE_NAME = memcached
-PACKAGE_STRING = memcached UNKNOWN
+PACKAGE_STRING = memcached 1.4.33
 PACKAGE_TARNAME = memcached
 PACKAGE_URL = 
-PACKAGE_VERSION = UNKNOWN
+PACKAGE_VERSION = 1.4.33
 PATH_SEPARATOR = :
 PROFILER = /usr/bin/gcov
-PROFILER_FLAGS = -fprofile-arcs -ftest-coverage
-PROFILER_LDFLAGS = -lgcov
+PROFILER_FLAGS = 
+PROFILER_LDFLAGS = 
 SET_MAKE = 
 SHELL = /bin/bash
-STRIP = 
-VERSION = UNKNOWN
+STRIP = x86_64-rumprun-netbsd-strip
+VERSION = 1.4.33
 XML2RFC = no
-XSLTPROC = /usr/bin/xsltproc
-ac_ct_CC = gcc
+XSLTPROC = no
+abs_builddir = /home/gz/workspace/bespin/target/x86_64-bespin-none/release/build/rkapps-05fc8114dc22c83e/out/retocached/build
+abs_srcdir = /home/gz/workspace/bespin/target/x86_64-bespin-none/release/build/rkapps-05fc8114dc22c83e/out/retocached/build
+abs_top_builddir = /home/gz/workspace/bespin/target/x86_64-bespin-none/release/build/rkapps-05fc8114dc22c83e/out/retocached/build
+abs_top_srcdir = /home/gz/workspace/bespin/target/x86_64-bespin-none/release/build/rkapps-05fc8114dc22c83e/out/retocached/build
+ac_ct_CC = 
 am__include = include
 am__leading_dot = .
 am__quote = 
@@ -437,14 +446,15 @@ datarootdir = ${prefix}/share
 docdir = ${datarootdir}/doc/${PACKAGE_TARNAME}
 dvidir = ${docdir}
 exec_prefix = ${prefix}
-host = x86_64-pc-linux-gnu
-host_alias = 
+host = x86_64-rumprun-netbsd
+host_alias = x86_64-rumprun-netbsd
 host_cpu = x86_64
-host_os = linux-gnu
-host_vendor = pc
+host_os = netbsd
+host_vendor = rumprun
 htmldir = ${docdir}
 includedir = ${prefix}/include
 infodir = ${datarootdir}/info
+install_sh = ${SHELL} /home/gz/workspace/bespin/target/x86_64-bespin-none/release/build/rkapps-05fc8114dc22c83e/out/retocached/build/install-sh
 libdir = ${exec_prefix}/lib
 libexecdir = ${exec_prefix}/libexec
 localedir = ${datarootdir}/locale
@@ -453,7 +463,7 @@ mandir = ${datarootdir}/man
 mkdir_p = $(MKDIR_P)
 oldincludedir = /usr/include
 pdfdir = ${docdir}
-prefix = /usr/local
+prefix = /home/gz/workspace/bespin/target/x86_64-bespin-none/release/build/rkapps-05fc8114dc22c83e/out/retocached/build/dist
 program_transform_name = s,x,x,
 psdir = ${docdir}
 runstatedir = ${localstatedir}/run
@@ -480,35 +490,109 @@ memcached_SOURCES = memcached.c memcached.h hash.c hash.h \
 	$(am__append_7)
 memcached_debug_SOURCES = $(memcached_SOURCES)
 memcached_CPPFLAGS = -DNDEBUG
-memcached_debug_LDADD = -lgcov $(am__append_9) \
+memcached_debug_LDADD =  $(am__append_9) \
 	$(am__append_14)
-memcached_debug_CFLAGS = -fprofile-arcs -ftest-coverage -DMEMCACHED_DEBUG
+memcached_debug_CFLAGS =  -DMEMCACHED_DEBUG
 memcached_LDADD = $(am__append_8) $(am__append_12)
 memcached_DEPENDENCIES = $(am__append_13)
 memcached_debug_DEPENDENCIES = $(am__append_15)
 CLEANFILES = $(am__append_11) $(am__append_16)
+SUBDIRS = doc
 DIST_DIRS = scripts
-EXTRA_DIST = scripts t memcached.spec memcached_dtrace.d version.m4 README.md LICENSE.bipbuffer
+EXTRA_DIST = doc scripts t memcached.spec memcached_dtrace.d version.m4 README.md LICENSE.bipbuffer
 MOSTLYCLEANFILES = *.gcov *.gcno *.gcda *.tcov
 all: $(BUILT_SOURCES) config.h
 	$(MAKE) $(AM_MAKEFLAGS) all-recursive
 
 .SUFFIXES:
 .SUFFIXES: .c .o .obj
+am--refresh: Makefile
+	@:
+$(srcdir)/Makefile.in:  $(srcdir)/Makefile.am  $(am__configure_deps)
+	@for dep in $?; do \
+	  case '$(am__configure_deps)' in \
+	    *$$dep*) \
+	      echo ' cd $(srcdir) && $(AUTOMAKE) --foreign'; \
+	      $(am__cd) $(srcdir) && $(AUTOMAKE) --foreign \
+		&& exit 0; \
+	      exit 1;; \
+	  esac; \
+	done; \
+	echo ' cd $(top_srcdir) && $(AUTOMAKE) --foreign Makefile'; \
+	$(am__cd) $(top_srcdir) && \
+	  $(AUTOMAKE) --foreign Makefile
+Makefile: $(srcdir)/Makefile.in $(top_builddir)/config.status
+	@case '$?' in \
+	  *config.status*) \
+	    echo ' $(SHELL) ./config.status'; \
+	    $(SHELL) ./config.status;; \
+	  *) \
+	    echo ' cd $(top_builddir) && $(SHELL) ./config.status $@ $(am__depfiles_maybe)'; \
+	    cd $(top_builddir) && $(SHELL) ./config.status $@ $(am__depfiles_maybe);; \
+	esac;
+
+$(top_builddir)/config.status: $(top_srcdir)/configure $(CONFIG_STATUS_DEPENDENCIES)
+	$(SHELL) ./config.status --recheck
+
+$(top_srcdir)/configure:  $(am__configure_deps)
+	$(am__cd) $(srcdir) && $(AUTOCONF)
+$(ACLOCAL_M4):  $(am__aclocal_m4_deps)
+	$(am__cd) $(srcdir) && $(ACLOCAL) $(ACLOCAL_AMFLAGS)
+$(am__aclocal_m4_deps):
 
 config.h: stamp-h1
 	@test -f $@ || rm -f stamp-h1
 	@test -f $@ || $(MAKE) $(AM_MAKEFLAGS) stamp-h1
 
-stamp-h1: $(srcdir)/config.h.in 
+stamp-h1: $(srcdir)/config.h.in $(top_builddir)/config.status
 	@rm -f stamp-h1
-	cd $(top_builddir)
+	cd $(top_builddir) && $(SHELL) ./config.status config.h
 $(srcdir)/config.h.in:  $(am__configure_deps) 
+	($(am__cd) $(top_srcdir) && $(AUTOHEADER))
 	rm -f stamp-h1
 	touch $@
 
 distclean-hdr:
 	-rm -f config.h stamp-h1
+install-binPROGRAMS: $(bin_PROGRAMS)
+	@$(NORMAL_INSTALL)
+	@list='$(bin_PROGRAMS)'; test -n "$(bindir)" || list=; \
+	if test -n "$$list"; then \
+	  echo " $(MKDIR_P) '$(DESTDIR)$(bindir)'"; \
+	  $(MKDIR_P) "$(DESTDIR)$(bindir)" || exit 1; \
+	fi; \
+	for p in $$list; do echo "$$p $$p"; done | \
+	sed 's/$(EXEEXT)$$//' | \
+	while read p p1; do if test -f $$p \
+	  ; then echo "$$p"; echo "$$p"; else :; fi; \
+	done | \
+	sed -e 'p;s,.*/,,;n;h' \
+	    -e 's|.*|.|' \
+	    -e 'p;x;s,.*/,,;s/$(EXEEXT)$$//;$(transform);s/$$/$(EXEEXT)/' | \
+	sed 'N;N;N;s,\n, ,g' | \
+	$(AWK) 'BEGIN { files["."] = ""; dirs["."] = 1 } \
+	  { d=$$3; if (dirs[d] != 1) { print "d", d; dirs[d] = 1 } \
+	    if ($$2 == $$4) files[d] = files[d] " " $$1; \
+	    else { print "f", $$3 "/" $$4, $$1; } } \
+	  END { for (d in files) print "f", d, files[d] }' | \
+	while read type dir files; do \
+	    if test "$$dir" = .; then dir=; else dir=/$$dir; fi; \
+	    test -z "$$files" || { \
+	      echo " $(INSTALL_PROGRAM_ENV) $(INSTALL_PROGRAM) $$files '$(DESTDIR)$(bindir)$$dir'"; \
+	      $(INSTALL_PROGRAM_ENV) $(INSTALL_PROGRAM) $$files "$(DESTDIR)$(bindir)$$dir" || exit $$?; \
+	    } \
+	; done
+
+uninstall-binPROGRAMS:
+	@$(NORMAL_UNINSTALL)
+	@list='$(bin_PROGRAMS)'; test -n "$(bindir)" || list=; \
+	files=`for p in $$list; do echo "$$p"; done | \
+	  sed -e 'h;s,^.*/,,;s/$(EXEEXT)$$//;$(transform)' \
+	      -e 's/$$/$(EXEEXT)/' \
+	`; \
+	test -n "$$list" || exit 0; \
+	echo " ( cd '$(DESTDIR)$(bindir)' && rm -f" $$files ")"; \
+	cd "$(DESTDIR)$(bindir)" && rm -f $$files
 
 clean-binPROGRAMS:
 	-test -z "$(bin_PROGRAMS)" || rm -f $(bin_PROGRAMS)
@@ -519,9 +603,6 @@ clean-noinstPROGRAMS:
 memcached$(EXEEXT): $(memcached_OBJECTS) $(memcached_DEPENDENCIES) $(EXTRA_memcached_DEPENDENCIES) 
 	@rm -f memcached$(EXEEXT)
 	$(AM_V_CCLD)$(LINK) $(memcached_OBJECTS) $(memcached_LDADD) $(LIBS)
-
-libmemcached.a: $(memcached_OBJECTS) $(memcached_DEPENDENCIES) $(EXTRA_memcached_DEPENDENCIES) 
-	ar rcs $@ $(memcached_OBJECTS)
 
 memcached-debug$(EXEEXT): $(memcached_debug_OBJECTS) $(memcached_debug_DEPENDENCIES) $(EXTRA_memcached_debug_DEPENDENCIES) 
 	@rm -f memcached-debug$(EXEEXT)
@@ -1677,7 +1758,6 @@ maintainer-clean-generic:
 	@echo "it deletes files that may require special tools to rebuild."
 	-test -z "$(BUILT_SOURCES)" || rm -f $(BUILT_SOURCES)
 clean: clean-recursive
-	rm -rf *.a
 
 clean-am: clean-binPROGRAMS clean-generic clean-noinstPROGRAMS \
 	mostlyclean-am
@@ -1685,7 +1765,7 @@ clean-am: clean-binPROGRAMS clean-generic clean-noinstPROGRAMS \
 distclean: distclean-recursive
 	-rm -f $(am__CONFIG_DISTCLEAN_FILES)
 	-rm -rf ./$(DEPDIR)
-	
+	-rm -f Makefile
 distclean-am: clean-am distclean-compile distclean-generic \
 	distclean-hdr distclean-tags
 
@@ -1733,7 +1813,7 @@ maintainer-clean: maintainer-clean-recursive
 	-rm -f $(am__CONFIG_DISTCLEAN_FILES)
 	-rm -rf $(top_srcdir)/autom4te.cache
 	-rm -rf ./$(DEPDIR)
-	
+	-rm -f Makefile
 maintainer-clean-am: distclean-am maintainer-clean-generic \
 	maintainer-clean-local
 
@@ -1816,6 +1896,9 @@ test:	memcached-debug sizes testapp
 	    fi \
 	  done \
 	else :; fi
+
+docs:
+	(cat Doxyfile ; echo "PROJECT_NUMBER=`cat version.num`") | doxygen -
 
 dist-hook:
 	rm -f $(distdir)/*/*~ $(distdir)/t/lib/*~ $(distdir)/*~

@@ -35,13 +35,13 @@
 /* #undef HAVE_DROP_WORKER_PRIVILEGES */
 
 /* GCC 64bit Atomics available */
-#define HAVE_GCC_64ATOMICS 1
+/* #undef HAVE_GCC_64ATOMICS */
 
 /* GCC Atomics available */
 #define HAVE_GCC_ATOMICS 1
 
 /* Define to 1 if support getopt_long */
-#define HAVE_GETOPT_LONG 1
+/* #undef HAVE_GETOPT_LONG */
 
 /* Define to 1 if you have the `getpagesizes' function. */
 /* #undef HAVE_GETPAGESIZES */
@@ -113,7 +113,7 @@
 #define HAVE__BOOL 1
 
 /* Machine need alignment */
-/* #undef NEED_ALIGN */
+#define NEED_ALIGN 1
 
 /* Name of package */
 #define PACKAGE "memcached"
@@ -125,7 +125,7 @@
 #define PACKAGE_NAME "memcached"
 
 /* Define to the full name and version of this package. */
-#define PACKAGE_STRING "memcached UNKNOWN"
+#define PACKAGE_STRING "memcached 1.4.33"
 
 /* Define to the one symbol short name of this package. */
 #define PACKAGE_TARNAME "memcached"
@@ -134,13 +134,13 @@
 #define PACKAGE_URL ""
 
 /* Define to the version of this package. */
-#define PACKAGE_VERSION "UNKNOWN"
+#define PACKAGE_VERSION "1.4.33"
 
 /* Define to 1 if you have the ANSI C header files. */
 #define STDC_HEADERS 1
 
 /* Version number of package */
-#define VERSION "UNKNOWN"
+#define VERSION "1.4.33"
 
 /* find sigignore on Linux */
 #define _GNU_SOURCE 1

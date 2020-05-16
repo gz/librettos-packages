@@ -10,24 +10,34 @@ $(RUMPRUN_PKGS_DIR)/lib/libevent.a:
 	$(MAKE) -C ../libevent
 
 MEMCACHED_CONF_ENV += \
-	LIBS="-lc -lgomp"\
-	CC='$(RUMPRUN_CC)'
+	LIBS='-lc -lgomp' \
+	CC=$(RUMPRUN_CC)
 
 MEMCACHED_CONF_OPTS += \
 	--prefix=$(shell pwd)/build/dist \
 	--host=$(RUMPRUN_TOOLCHAIN_TUPLE) \
 	--with-libevent=$(shell pwd)/../../pkgs
 
+build/stamp_patch:
+	(cd build && ../../scripts/apply-patches.sh ./ ../patches/*)
+	touch $@
+
 .PHONY: build/Makefile
-build/Makefile:
+build/Makefile: build/stamp_patch
 	(cd build; $(MEMCACHED_CONF_ENV) ./configure $(MEMCACHED_CONF_OPTS); make)
 
-build/configure:
-	cp -rf src build
+dl/$(TARBALL):
+	mkdir -p dl
+	../scripts/fetch.sh ${UPSTREAM} dl/$(TARBALL)
+
+build/configure: | dl/$(TARBALL)
+	mkdir -p build
+	(cd build && tar -xz --strip-components 1 -f ../dl/$(TARBALL))
 
 .PHONY: clean
 clean:
 	(cd build; make clean)
+	rm build/stamp_patch
 
 .PHONY: distclean
 distclean: clean

@@ -7613,7 +7613,7 @@ int main (int argc, char **argv) {
         }
     }
 
-    /* lose root privileges if we have them */
+    /* lose root privileges if we have them
     if (getuid() == 0 || geteuid() == 0) {
         if (username == 0 || *username == '\0') {
             fprintf(stderr, "can't run as root without the -u switch\n");
@@ -7632,6 +7632,7 @@ int main (int argc, char **argv) {
             exit(EX_OSERR);
         }
     }
+    */
 
     /* Initialize Sasl if -S was specified */
     if (settings.sasl) {
@@ -7881,10 +7882,10 @@ int main (int argc, char **argv) {
     /* pin threads */
     int thread_id = omp_get_thread_num();
 
-    cpu_set_t my_set;
+    /*cpu_set_t my_set;
     CPU_ZERO(&my_set);
     CPU_SET(thread_id, &my_set);
-    sched_setaffinity(0, sizeof(cpu_set_t), &my_set);
+    sched_setaffinity(0, sizeof(cpu_set_t), &my_set);*/
 
     conn *myconn = conns[thread_id];
 //    printf("thread:%i of %i on core %i using conn=%p\n", thread_id,
