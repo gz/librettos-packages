@@ -7876,11 +7876,14 @@ int main (int argc, char **argv) {
     fprintf (stderr,"Populate the database\n");
     fprintf (stderr,"Elms array %p\n", (void*)elms);
     fprintf (stderr,"Populating %zu / %zu key-value pairs:\n", counter,BENCHMARK_MAX_KEYS);
+
+  gettimeofday(&start, NULL);
   /* prepopulate the thing */
   #pragma omp parallel reduction(+:counter)
   {
     /* pin threads */
     int thread_id = omp_get_thread_num();
+    fprintf (stderr,"thread_id = %zu\n", thread_id);
 
     /*cpu_set_t my_set;
     CPU_ZERO(&my_set);
@@ -7909,9 +7912,12 @@ int main (int argc, char **argv) {
       counter++;
     }
   }
-  fprintf (stderr,"Populated %zu / %zu key-value pairs:\n", counter,BENCHMARK_MAX_KEYS);
-  fprintf (stderr,"=====================================\n");
+  gettimeofday(&end, NULL);
 
+  fprintf (stderr,"Populated %zu / %zu key-value pairs:\n", counter,BENCHMARK_MAX_KEYS);
+  fprintf (stderr,"Populating took %lu seconds\n", end.tv_sec - start.tv_sec);
+  fprintf (stderr,"=====================================\n");
+  long prepopulate_time = end.tv_sec - start.tv_sec;
   ///< the name of the shared memory file created
   #define CONFIG_SHM_FILE_NAME "/tmp/alloctest-bench"
 
@@ -7926,7 +7932,6 @@ int main (int argc, char **argv) {
   //usleep(125);
   gettimeofday(&start, NULL);
 
-    omp_set_num_threads(4);
     size_t num_threads = omp_get_num_threads();
     size_t max_threads = omp_get_max_threads();
     printf("number threads is %zu\n", num_threads);
@@ -7936,7 +7941,7 @@ int main (int argc, char **argv) {
 
   size_t num_queries = 0;
   //for (size_t i = 0; i < 2; i++) {
-  #pragma omp parallel reduction(+:num_queries) num_threads(4)
+  #pragma omp parallel reduction(+:num_queries)
   {
     size_t num_threads = omp_get_num_threads();
 
@@ -7983,7 +7988,7 @@ int main (int argc, char **argv) {
   }
   gettimeofday(&end, NULL);
 
-  fprintf (stderr,"signalling done to %s\n", CONFIG_SHM_FILE_NAME ".done");
+  //fprintf (stderr,"signalling done to %s\n", CONFIG_SHM_FILE_NAME ".done");
   /*fd2 = fopen(CONFIG_SHM_FILE_NAME ".done", "w");
 
   if (fd2 == NULL) {
@@ -8001,6 +8006,16 @@ int main (int argc, char **argv) {
   fprintf (stderr,"benchmark took %lu seconds\n", end.tv_sec - start.tv_sec);
   fprintf (stderr,"benchmark took %lu queries / second\n", num_queries / (end.tv_sec - start.tv_sec));
   fprintf (stderr,"benchmark executed %lu / %lu queries\n", num_queries, (num_threads * QUERIES_PER_THREAD));
+
+  fprintf (stderr,"CSV: total_queries,queries_per_thread,bench_secs,query_tps,pre_populate_count,pre_populate_sec\n", num_queries, (num_threads * QUERIES_PER_THREAD));
+  fprintf (stderr,"CSV: %lu,%lu,%lu,%lu,%lu,%lu\n",
+    num_queries,
+    (num_threads * QUERIES_PER_THREAD),
+    (end.tv_sec - start.tv_sec),
+    num_queries / (end.tv_sec - start.tv_sec),
+    counter,
+    prepopulate_time
+  );
 
   exit(0);
 

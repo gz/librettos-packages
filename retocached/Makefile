@@ -3,11 +3,15 @@ include ../Makefile.inc
 UPSTREAM=http://www.memcached.org/files/memcached-1.4.33.tar.gz
 TARBALL=$(notdir $(UPSTREAM))
 
-all: $(RUMPRUN_PKGS_DIR)/lib/libevent.a build/configure build/Makefile
+all: $(RUMPRUN_PKGS_DIR)/lib/libevent.a $(RUMPRUN_PKGS_DIR)/lib/libgomp.a build/Makefile
 
-.NOTPARALLEL: $(RUMPRUN_PKGS_DIR)/lib/libevent.a
+.NOTPARALLEL: $(RUMPRUN_PKGS_DIR)/lib/libevent.a $(RUMPRUN_PKGS_DIR)/lib/libgomp.a
 $(RUMPRUN_PKGS_DIR)/lib/libevent.a:
 	$(MAKE) -C ../libevent
+
+$(RUMPRUN_PKGS_DIR)/lib/libgomp.a:
+	$(MAKE) -C ../libgomp
+
 
 MEMCACHED_CONF_ENV += \
 	LIBS='-lc -lgomp' \
@@ -25,14 +29,6 @@ build/stamp_patch:
 .PHONY: build/Makefile
 build/Makefile: build/stamp_patch
 	(cd build; $(MEMCACHED_CONF_ENV) ./configure $(MEMCACHED_CONF_OPTS); make)
-
-dl/$(TARBALL):
-	mkdir -p dl
-	../scripts/fetch.sh ${UPSTREAM} dl/$(TARBALL)
-
-build/configure: | dl/$(TARBALL)
-	mkdir -p build
-	(cd build && tar -xz --strip-components 1 -f ../dl/$(TARBALL))
 
 .PHONY: clean
 clean:
