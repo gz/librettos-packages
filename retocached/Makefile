@@ -18,26 +18,17 @@ MEMCACHED_CONF_OPTS += \
 	--host=$(RUMPRUN_TOOLCHAIN_TUPLE) \
 	--with-libevent=$(shell pwd)/../../pkgs
 
-build/stamp_patch:
-	(cd build && ../../scripts/apply-patches.sh ./ ../patches/*)
-	touch $@
-
 .PHONY: build/Makefile
-build/Makefile: build/stamp_patch
+build/Makefile:
 	(cd build; $(MEMCACHED_CONF_ENV) ./configure $(MEMCACHED_CONF_OPTS); make)
 
-#dl/$(TARBALL):
-#	mkdir -p dl
-#	../scripts/fetch.sh ${UPSTREAM} dl/$(TARBALL)
-
-build/configure: | dl/$(TARBALL)
-	mkdir -p build
+build/configure:
+	cp -rf src build
 	(cd build && tar -xz --strip-components 1 -f ../dl/$(TARBALL))
 
 .PHONY: clean
 clean:
 	(cd build; make clean)
-	rm build/stamp_patch
 
 .PHONY: distclean
 distclean: clean
