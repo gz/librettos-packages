@@ -69,8 +69,8 @@
 #define BIN_PKT_HDR_WORDS (MIN_BIN_PKT_LENGTH/sizeof(uint64_t))
 
 /* Initial power multiplier for the hash table */
-//#define LOW_MEMORY
-#define CASCADE_LAKE 1
+#define LOW_MEMORY
+//#define CASCADE_LAKE 1
 /*
  */
 
@@ -78,13 +78,15 @@
 #define USED_SLAB_PAGE_SIZE (1UL << 30)
 
 #ifdef LOW_MEMORY
-/* aim for 16G */
-#define HASHPOWER_DEFAULT 30
-#define HASHPOWER_MAX 30
+/* aim for ~2G */
+#define HASHPOWER_DEFAULT 28
+#define HASHPOWER_MAX 28
 #define BENCHMARK_MAX_KEYS (1UL << (HASHPOWER_DEFAULT - 5))
 #define BENCHMARK_ITEM_VALUE_SIZE (sizeof(void *))
-#define BENCHMARK_SLAB_PREALLOC_SIZE (6UL << 30)
-#define QUERIES_PER_THREAD (1024UL * 1000UL * 1000UL)
+#define BENCHMARK_SLAB_PREALLOC_SIZE (4UL << 30)
+#define QUERIES_PER_THREAD (100UL * 1000UL * 1000UL)
+/// THIS IS THE AMOUNT FOR THE ELEMENT ARRAY
+#define BENCHMARK_ELEMENT_SIZE 128
 #else
 
 #ifdef CASCADE_LAKE

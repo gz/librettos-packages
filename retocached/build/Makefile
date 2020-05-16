@@ -378,10 +378,10 @@ AUTOCONF = ${SHELL} /home/gz/workspace/bespin/target/x86_64-bespin-none/release/
 AUTOHEADER = ${SHELL} /home/gz/workspace/bespin/target/x86_64-bespin-none/release/build/rkapps-05fc8114dc22c83e/out/retocached/build/missing autoheader
 AUTOMAKE = ${SHELL} /home/gz/workspace/bespin/target/x86_64-bespin-none/release/build/rkapps-05fc8114dc22c83e/out/retocached/build/missing automake-1.15
 AWK = mawk
-CC = x86_64-rumprun-netbsd-gcc
+CC = x86_64-rumprun-netbsd-gcc -fopenmp
 CCDEPMODE = depmode=gcc3
 CFLAGS = -g -O2 -pthread -pthread -Wall -Werror -pedantic -Wmissing-prototypes -Wmissing-declarations -Wredundant-decls
-CPP = x86_64-rumprun-netbsd-gcc -E
+CPP = x86_64-rumprun-netbsd-gcc -fopenmp -E
 CPPFLAGS =  -I/home/gz/workspace/bespin/target/x86_64-bespin-none/release/build/rkapps-05fc8114dc22c83e/out/pkgs/include
 CYGPATH_W = echo
 DEFS = -DHAVE_CONFIG_H

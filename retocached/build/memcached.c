@@ -7912,29 +7912,33 @@ int main (int argc, char **argv) {
   fprintf (stderr,"Populated %zu / %zu key-value pairs:\n", counter,BENCHMARK_MAX_KEYS);
   fprintf (stderr,"=====================================\n");
 
-
-
   ///< the name of the shared memory file created
   #define CONFIG_SHM_FILE_NAME "/tmp/alloctest-bench"
 
-  fprintf (stderr,"signalling readyness to %s\n", CONFIG_SHM_FILE_NAME ".ready");
+  /*fprintf (stderr,"signalling readyness to %s\n", CONFIG_SHM_FILE_NAME ".ready");
   FILE *fd2 = fopen(CONFIG_SHM_FILE_NAME ".ready", "w");
 
   if (fd2 == NULL) {
       fprintf (stderr, "ERROR: could not create the shared memory file descriptor\n");
       exit(-1);
-  }
+  }*/
 
-  usleep(125);
-
+  //usleep(125);
   gettimeofday(&start, NULL);
 
-  size_t num_threads = omp_get_num_threads();
+    omp_set_num_threads(4);
+    size_t num_threads = omp_get_num_threads();
+    size_t max_threads = omp_get_max_threads();
+    printf("number threads is %zu\n", num_threads);
+    printf("max num threads is %zu\n", max_threads);
+    printf("OMP_NUM_THREADS %s\n", getenv("OMP_NUM_THREADS"));
+
 
   size_t num_queries = 0;
   //for (size_t i = 0; i < 2; i++) {
-  #pragma omp parallel reduction(+:num_queries)
+  #pragma omp parallel reduction(+:num_queries) num_threads(4)
   {
+    size_t num_threads = omp_get_num_threads();
 
     /* pin threads */
     int thread_id = omp_get_thread_num();
@@ -7942,6 +7946,7 @@ int main (int argc, char **argv) {
     size_t found = 0;
 
     conn *myconn = conns[thread_id];
+    printf("thread_id is %zu\n", thread_id);
 
     size_t g_seed = (214013UL*thread_id+2531011UL);
    // printf("thread:%i of %i on core %i using conn=%p\n", thread_id,
@@ -7979,12 +7984,12 @@ int main (int argc, char **argv) {
   gettimeofday(&end, NULL);
 
   fprintf (stderr,"signalling done to %s\n", CONFIG_SHM_FILE_NAME ".done");
-  fd2 = fopen(CONFIG_SHM_FILE_NAME ".done", "w");
+  /*fd2 = fopen(CONFIG_SHM_FILE_NAME ".done", "w");
 
   if (fd2 == NULL) {
       fprintf (stderr, "ERROR: could not create the shared memory file descriptor\n");
       exit(-1);
-  }
+  }*/
 
 
   double sec = (end.tv_sec - start.tv_sec) + (end.tv_usec - end.tv_usec) * 1000000;
