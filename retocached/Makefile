@@ -37,8 +37,6 @@ build/configure: | dl/$(TARBALL)
 .PHONY: clean
 clean:
 	(cd build; make clean)
-	rm build/stamp_patch
 
 .PHONY: distclean
 distclean: clean
-	rm -rf build

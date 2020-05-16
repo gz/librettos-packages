@@ -12,6 +12,7 @@ bin/openmp:	build/openmp
 	mkdir -p lib
 	cp gcc-build/.libs/libgomp.a lib/
 	cp gcc-build/.libs/libgomp.a ../pkgs/lib/
+	cp ./include/omp.h ../pkgs/include
 
 build/openmp:	build/configure
 	cd gcc-build; $(MAKE)
