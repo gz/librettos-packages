@@ -23,7 +23,8 @@ MEMCACHED_CONF_OPTS += \
 	--with-libevent=$(shell pwd)/../../pkgs
 
 build/stamp_patch:
-	(cd build && ../../scripts/apply-patches.sh ./ ../patches/*)
+	cp -rf src build
+	(cd build && autoreconf -i && ../../scripts/apply-patches.sh ./ ../patches/*)
 	touch $@
 
 .PHONY: build/Makefile
@@ -36,3 +37,4 @@ clean:
 
 .PHONY: distclean
 distclean: clean
+	rm -rf build
