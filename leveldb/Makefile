@@ -1,11 +1,14 @@
 include ../Makefile.inc
 UPSTREAM=https://github.com/google/leveldb/archive/v1.18.tar.gz
 INSTALL_PREFIX ?= $(shell pwd)
-CC=$(RUMPRUN_CC)
-CXX=$(RUMPRUN_CXX)
+CC=$(RUMPRUN_CC) -L${RUMPRUN_SYSROOT}/../../obj-amd64-bespin/lib/libunwind/
+CXX=$(RUMPRUN_CXX) -L${RUMPRUN_SYSROOT}/../../obj-amd64-bespin/lib/libunwind/
 export CC CXX
 
-all: bin/db_bench 
+
+$(info $$RUMPRUN_SYSROOT is [${RUMPRUN_SYSROOT}])
+
+all: bin/db_bench
 
 bin/db_bench: build/db_bench
 	$(MAKE) -C build install PREFIX=${INSTALL_PREFIX}
