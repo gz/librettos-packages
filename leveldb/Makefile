@@ -1,5 +1,6 @@
 include ../Makefile.inc
 UPSTREAM=https://github.com/google/leveldb/archive/v1.18.tar.gz
+CUSTOM=https://github.com/amytai/leveldb.git
 INSTALL_PREFIX ?= $(shell pwd)
 CC=$(RUMPRUN_CC) -L${RUMPRUN_SYSROOT}/../../obj-amd64-bespin/lib/libunwind/
 CXX=$(RUMPRUN_CXX) -L${RUMPRUN_SYSROOT}/../../obj-amd64-bespin/lib/libunwind/
@@ -14,6 +15,9 @@ bin/db_bench: build/db_bench
 	$(MAKE) -C build install PREFIX=${INSTALL_PREFIX}
 
 build/db_bench: build/stamp_patch
+	mkdir -p amy-leveldb
+	git clone ${CUSTOM} -b bespin amy-leveldb
+	(cd amy-leveldb && ./copy_source.sh ../build/)
 	$(MAKE) -C build TARGET_OS=NetBSD
 
 build/stamp_patch: build/Makefile patches/*
