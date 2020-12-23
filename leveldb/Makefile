@@ -11,22 +11,21 @@ export CC CXX
 $(info $$RUMPRUN_SYSROOT is [${RUMPRUN_SYSROOT}])
 
 all: bin/db_bench
+	mkdir -p bin
+	cp build/db_bench bin
 
 bin/db_bench: build/db_bench
-	$(MAKE) -C build install PREFIX=${INSTALL_PREFIX}
 
-build/db_bench: build/stamp_patch
+build/db_bench: build/Makefile patches/*
 	mkdir -p amy-leveldb
 	mkdir -p litl
 	git clone ${CUSTOM} -b bespin amy-leveldb
 	git clone ${LOCKS} -b leveldb litl
 	(cd litl && make)
 	(cd amy-leveldb && ./copy_source.sh ../build/)
-	$(MAKE) -C build TARGET_OS=NetBSD
-
-build/stamp_patch: build/Makefile patches/*
 	../scripts/apply-patches.sh build/ patches/*
 	touch $@
+	$(MAKE) -C build TARGET_OS=NetBSD
 
 build/Makefile:
 	mkdir -p build
@@ -36,4 +35,7 @@ build/Makefile:
 .PHONY: clean
 clean:
 	-$(MAKE) -C build clean
-	rm -f bin/*
+	rm -rf bin
+	rm -rf amy-leveldb
+	rm -rf litl
+	rm -rf build
