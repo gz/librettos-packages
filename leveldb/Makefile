@@ -1,5 +1,6 @@
 include ../Makefile.inc
-UPSTREAM=https://github.com/google/leveldb/archive/v1.18.tar.gz
+UPSTREAM=https://github.com/amytai/leveldb.git
+LOCKS=https://github.com/ankit-iitb/litl.git
 INSTALL_PREFIX ?= $(shell pwd)
 CC=$(RUMPRUN_CC) -L${RUMPRUN_SYSROOT}/../../obj-amd64-bespin/lib/libunwind/
 CXX=$(RUMPRUN_CXX) -L${RUMPRUN_SYSROOT}/../../obj-amd64-bespin/lib/libunwind/
@@ -21,11 +22,14 @@ build/stamp_patch: build/Makefile patches/*
 	touch $@
 
 build/Makefile:
+	mkdir -p litl
+	git clone ${LOCKS} -b leveldb
+	(cd litl && $(MAKE) TARGET_OS=NetBSD)
 	mkdir -p build
-	../scripts/fetch.sh ${UPSTREAM} build/leveldb.tar.gz
-	(cd build && tar -xz --strip-components 1 -f leveldb.tar.gz)
+	git clone ${UPSTREAM} -b bespin build
 
 .PHONY: clean
 clean:
-	-$(MAKE) -C build clean
+	rm -rf build
+	rm -rf litl
 	rm -f bin/*
