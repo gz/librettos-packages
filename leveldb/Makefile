@@ -2,8 +2,8 @@ include ../Makefile.inc
 UPSTREAM=https://github.com/amytai/leveldb.git
 LOCKS=https://github.com/amytai/litl.git
 INSTALL_PREFIX ?= $(shell pwd)
-CC=$(RUMPRUN_CC) -L${RUMPRUN_SYSROOT}/../../obj-amd64-bespin/lib/libunwind/
-CXX=$(RUMPRUN_CXX) -L${RUMPRUN_SYSROOT}/../../obj-amd64-bespin/lib/libunwind/
+CC=$(RUMPRUN_CC) -L${RUMPRUN_SYSROOT}/../../obj-amd64-nrk/lib/libunwind/
+CXX=$(RUMPRUN_CXX) -L${RUMPRUN_SYSROOT}/../../obj-amd64-nrk/lib/libunwind/
 export CC CXX
 
 
