@@ -1,6 +1,5 @@
 include ../Makefile.inc
-UPSTREAM=https://github.com/amytai/leveldb.git
-LOCKS=https://github.com/amytai/litl.git
+UPSTREAM=https://github.com/hunhoffe/leveldb.git
 INSTALL_PREFIX ?= $(shell pwd)
 CC=$(RUMPRUN_CC) -L${RUMPRUN_SYSROOT}/../../obj-amd64-nrk/lib/libunwind/
 CXX=$(RUMPRUN_CXX) -L${RUMPRUN_SYSROOT}/../../obj-amd64-nrk/lib/libunwind/
@@ -22,14 +21,10 @@ build/stamp_patch: build/Makefile patches/*
 	touch $@
 
 build/Makefile:
-	mkdir -p litl
-	git clone ${LOCKS} -b netbsd
-	(cd litl && make TARGET_OS=NetBSD)
 	mkdir -p build
 	git clone ${UPSTREAM} -b bespin build
 
 .PHONY: clean
 clean:
 	rm -rf build
-	rm -rf litl
 	rm -f bin/*
