@@ -1,8 +1,8 @@
 include ../Makefile.inc
 
-all: $(RUMPRUN_PKGS_DIR)/lib/libevent.a build/configure build/Makefile
+all: $(RUMPRUN_PKGS_DIR)/lib/libevent.a $(RUMPRUN_PKGS_DIR)/lib/libgomp.a build/configure build/Makefile
 
-.NOTPARALLEL: $(RUMPRUN_PKGS_DIR)/lib/libevent.a
+.NOTPARALLEL: $(RUMPRUN_PKGS_DIR)/lib/libevent.a $(RUMPRUN_PKGS_DIR)/lib/libgomp.a
 $(RUMPRUN_PKGS_DIR)/lib/libevent.a:
 	$(MAKE) -C ../libevent
 
