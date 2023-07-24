@@ -43,7 +43,7 @@ build/monetdbpatch_stamp: build/monetdbextract_stamp
 	sed -i 's/ki->kp_eproc.e_vm.vm_rssize/rss = -1; \/\/ki->kp_eproc.e_vm.vm_rssize;/g' $(SOURCE_DIR)/gdk/gdk_posix.c
 	sed -i 's/add_subdirectory(examples)/# add_subdirectory(examples)/g' $(SOURCE_DIR)/clients/CMakeLists.txt
 	sed -i 's/add_subdirectory(mserver)/# add_subdirectory(mserver)/g' $(SOURCE_DIR)/tools/CMakeLists.txt
-	sed -i 's/add_subdirectory(monetdlsbe)/# add_subdirectory(monetdbe)/g' $(SOURCE_DIR)/tools/CMakeLists.txt
+	sed -i 's/add_subdirectory(monetdbe)/# add_subdirectory(monetdbe)/g' $(SOURCE_DIR)/tools/CMakeLists.txt
 	sed -i 's/add_subdirectory(ctest)/# add_subdirectory(ctest)/g' $(SOURCE_DIR)/CMakeLists.txt
 	sed -i 's/popcount64/mypopcount64/g' $(SOURCE_DIR)/monetdb5/modules/mal/txtsim.c
 	touch $@
