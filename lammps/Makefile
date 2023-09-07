@@ -3,6 +3,10 @@ include ../Makefile.inc
 UPSTREAM=https://download.lammps.org/tars/lammps-stable.tar.gz
 TARBALL=$(notdir $(UPSTREAM))
 
+CC=$(RUMPRUN_CC) -L${RUMPRUN_SYSROOT}/../../obj-amd64-nrk/lib/libunwind/
+CXX=$(RUMPRUN_CXX) -L${RUMPRUN_SYSROOT}/../../obj-amd64-nrk/lib/libunwind/
+export CC CXX
+
 all: $(RUMPRUN_PKGS_DIR)/lib/libevent.a build/configure build/Makefile
 
 .NOTPARALLEL: $(RUMPRUN_PKGS_DI)/lib/libevent.a
@@ -27,7 +31,7 @@ build/configure: | dl/$(TARBALL)
 
 .PHONY: clean
 clean:
-	(cd build/src; make clean)
+	(cd build/src; make clean-serial)
 	rm build/stamp_patch
 
 .PHONY: distclean
