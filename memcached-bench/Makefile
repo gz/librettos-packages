@@ -28,8 +28,8 @@ build/Makefile: build/stamp_patch
 	(cd build; $(MEMCACHED_CONF_ENV) ./configure $(MEMCACHED_CONF_OPTS); make -j8)
 
 build/configure:
-	git clone https://github.com/gz/memcached.git build
-	(cd build && git checkout 35de90bc8b19a58dd6b3a924fc5c6c101a92ffdf)
+	git clone https://github.com/achreto/memcached.git build
+	(cd build && git checkout 7f2eb98359acd80d9c9b77591943e3bc6b9f0e4a)
 	(cd build && ./autogen.sh)
 
 .PHONY: clean
