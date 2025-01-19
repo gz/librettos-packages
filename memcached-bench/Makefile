@@ -29,7 +29,7 @@ build/Makefile: build/stamp_patch
 
 build/configure:
 	git clone https://github.com/achreto/memcached.git build
-	(cd build && git checkout dd7553f1dab0401a134adce5e581f5901651405d)
+	(cd build && git checkout 49ae82c09f37e704d7356737ed107144e4f01ed2)
 	(cd build && ./autogen.sh)
 
 .PHONY: clean
